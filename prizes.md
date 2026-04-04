@@ -83,13 +83,22 @@
 
 ## Prize Strategy — Yacht Trust Network
 
-Our project (Yacht Trust Network) targets **all prizes simultaneously** ($27,000 total potential):
+Target **4 tracks** where we have strong implementations. Skip tracks where we'd be stretching.
 
-| Prize | How We Qualify |
+### Targeting (up to $9K)
+
+| Prize | How We Qualify | Status |
+|---|---|---|
+| CRE Best Workflow ($2K) | Full pipeline: HTTP trigger → AIS API → consensus → signed report → EVM write. Broadcast-verified on-chain. | Done |
+| CRE Privacy ($1K) | API key via `runtime.getSecret`, vessel data through Confidential HTTP, enclave-protected | Done |
+| World ID 4.0 ($4K-$1.5K) | Nullifier as identity anchor, duplicate registration blocked, backend proof validation via IDKit | Done |
+| MiniKit 2.0 ($2K-$750) | Mini App with MiniKit SDK, contracts on World Chain, not gambling | Done |
+
+### Skipping
+
+| Prize | Why Skip |
 |---|---|
-| CRE Best Workflow ($4K) | AIS oracle workflow: HTTP trigger + Confidential HTTP + EVM Write to World Chain |
-| CRE Privacy ($2K) | AIS API key via Confidential HTTP, sensitive vessel data never exposed on-chain |
-| Connect the World ($1K) | CRE workflow makes state change on World Chain via YachtRegistry contract |
-| World ID 4.0 ($8K) | Nullifier as permanent identity anchor, duplicate registration blocked, proof validated in backend |
-| AgentKit ($8K) | Crew agency AI agent gated by AgentKit, distinguishes human-backed agents from bots |
-| MiniKit 2.0 ($4K) | Full Mini App in World App with pay, chat, contracts on World Chain, not gambling |
+| Connect the World ($1K) | Overlaps with Best Workflow — same CRE + on-chain state change. Dilutes the pitch. |
+| AgentKit ($8K) | Not implemented. Bolting on last-minute weakens the submission. |
+
+See [chainlink-demo-guide.md](chainlink-demo-guide.md) and [crew-attestation-demo-guide.md](crew-attestation-demo-guide.md) for demo walkthroughs.
