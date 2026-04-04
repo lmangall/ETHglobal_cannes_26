@@ -1,0 +1,14 @@
+[workflow]
+name = "ais-vessel-oracle"
+version = "0.1.0"
+
+[trigger]
+type = "http"
+path = "/register-vessel"
+
+[secrets]
+AIS_API_KEY = { env = "AIS_API_KEY" }
+
+[target]
+chain = "ethereum-testnet-sepolia-worldchain-1"
+contract = "" # YachtRegistry address after deployment
