@@ -6,6 +6,8 @@ A maritime crew reputation and vessel verification platform built as a World App
 ## Key Documentation
 - [yacht-implementation-plan.md](yacht-implementation-plan.md) — Full implementation plan with phases, pseudocode, verification table, and tech stack
 - [prizes.md](prizes.md) — Target hackathon prizes (Chainlink $7K + World $20K) with qualification requirements and strategy
+- [chainlink-demo-guide.md](chainlink-demo-guide.md) — CRE workflow demo: simulation, broadcast, test payloads
+- [crew-attestation-demo-guide.md](crew-attestation-demo-guide.md) — Crew attestation demo: Anvil fork testing with cast commands
 - [llms-txt/](llms-txt/) — LLM-friendly documentation files from providers (World, Chainlink, viem, Foundry, Next.js)
 
 ## Tech Stack
@@ -25,7 +27,9 @@ A maritime crew reputation and vessel verification platform built as a World App
 - MiniKit.verify() is DEPRECATED — use IDKit (`@worldcoin/idkit` / `@worldcoin/idkit-core`) for World ID verification
 - signRequest import: `@worldcoin/idkit-core/signing` (NOT `@worldcoin/idkit/signing`)
 - CRE workflows are a separate Bun project (>= 1.2.21), NOT part of the Next.js app
-- CRE deployment requires Early Access approval (`cre account access`)
+- CRE deployment requires Early Access approval (`cre account access`), but `--broadcast` mode works without it
+- YachtRegistry current deployment: `0xdEd817861eD9d2E5a8d0301C537E122a797C3EC9` (forwarder: deployer wallet `0xDC7D67...`)
+- CrewAttestation current deployment: `0x408B8eb461E41070eEEE3c6d02E89500C94ce7c5` (registry: YachtRegistry)
 
 ## Coding Conventions
 
