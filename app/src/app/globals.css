@@ -24,3 +24,16 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Leaflet tooltip — dark maritime theme */
+.vessel-tooltip {
+  background: #0C2340 !important;
+  border: 1px solid #1E3A5F !important;
+  border-radius: 8px !important;
+  color: #E2E8F0 !important;
+  padding: 8px 12px !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5) !important;
+}
+.vessel-tooltip::before {
+  border-top-color: #1E3A5F !important;
+}
