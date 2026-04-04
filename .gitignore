@@ -1,6 +1,30 @@
+# Environment
 .env
 .env.*
+
+# Dependencies
 node_modules/
+
+# Build output
 .next/
 out/
 dist/
+
+# Foundry
+contracts/cache/
+contracts/out/
+contracts/lib/
+
+# Broadcast (deploy receipts — keep for reference, gitignore if preferred)
+# contracts/broadcast/
+
+# IDE / tools
+.claude/
+.cursor/
+*.DS_Store
+
+# CRE build artifacts
+cre-workflows/**/.cre_build_tmp.*
+
+# LLM reference docs (large files)
+llms-txt/
