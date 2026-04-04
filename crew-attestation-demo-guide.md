@@ -2,7 +2,7 @@
 
 Crew Attestation is a **pure Solidity** reputation system (no Chainlink). Vessel owners and confirmed captains attest crew work records. Subjects confirm or dispute. All identity is anchored to World ID nullifiers.
 
-This guide walks through testing the full flow on a local Anvil fork of World Chain Sepolia.
+This guide walks through testing the full flow on a local Anvil fork of World Chain Mainnet.
 
 ---
 
@@ -10,7 +10,7 @@ This guide walks through testing the full flow on a local Anvil fork of World Ch
 
 Anvil is Foundry's local Ethereum node (like Hardhat Network / Ganache). With `--fork-url` it clones live chain state into a local instance — you get:
 
-- **Real deployed contracts** (YachtRegistry already on World Chain Sepolia)
+- **Real deployed contracts** (YachtRegistry already on World Chain Mainnet)
 - **10 pre-funded accounts** with 10K ETH each (no real gas)
 - **Instant blocks** (no waiting for confirmations)
 - **Impersonation** — send transactions as any address via `anvil_impersonateAccount`
@@ -30,7 +30,7 @@ Fork state is ephemeral: kill anvil and it's all gone.
 
 ```bash
 cd contracts
-anvil --fork-url https://worldchain-sepolia.g.alchemy.com/public
+anvil --fork-url https://worldchain-mainnet.g.alchemy.com/public
 ```
 
 Leave this running. All subsequent commands go in **Terminal 2**.
@@ -230,9 +230,9 @@ app/
 └── src/lib/contracts.ts                      ← ABI + addresses
 ```
 
-## Contract Addresses (World Chain Sepolia)
+## Contract Addresses (World Chain Mainnet)
 
 | Contract | Address |
 |----------|---------|
 | YachtRegistry | `0xdEd817861eD9d2E5a8d0301C537E122a797C3EC9` |
-| CrewAttestation | Not yet deployed on-chain (tested locally via anvil fork) |
+| CrewAttestation | `0x9437434A19b47c6e4B73a4c78a9921AD9cbCCAEe` |

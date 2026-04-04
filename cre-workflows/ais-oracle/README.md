@@ -1,6 +1,6 @@
 # AIS Oracle — CRE Workflow
 
-Chainlink CRE workflow that verifies yacht identity via the Datalastic AIS API and writes to YachtRegistry on World Chain Sepolia.
+Chainlink CRE workflow that verifies yacht identity via the Datalastic AIS API and writes to YachtRegistry on World Chain Mainnet.
 
 ## Run Simulation
 

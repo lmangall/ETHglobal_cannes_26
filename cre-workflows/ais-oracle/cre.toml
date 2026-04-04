@@ -10,5 +10,5 @@ path = "/register-vessel"
 AIS_API_KEY = { env = "AIS_API_KEY" }
 
 [target]
-chain = "ethereum-testnet-sepolia-worldchain-1"
+chain = "ethereum-mainnet-worldchain-1"
 contract = "0xdEd817861eD9d2E5a8d0301C537E122a797C3EC9"

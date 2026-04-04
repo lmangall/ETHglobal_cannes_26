@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useCallback } from "react";
 import type { EnrichedVessel } from "@/lib/ais-feed";
+import { useChatWithUser } from "@/lib/use-chat";
 
 /* ── Helpers ───────────────────────────────────────────────── */
 
@@ -126,9 +127,11 @@ export default function VesselSheet({ vessel, onClose }: VesselSheetProps) {
           isOpen ? "translate-y-0" : "translate-y-full"
         }`}
       >
-        {/* Drag handle */}
-        <div className="flex justify-center pb-1 pt-3">
-          <div className="h-1 w-10 rounded-full bg-[#334155]" />
+        {/* Drag handle — enlarged touch area */}
+        <div className="flex justify-center pt-2 pb-1">
+          <div className="flex h-8 w-16 items-center justify-center">
+            <div className="h-1 w-10 rounded-full bg-[#334155]" />
+          </div>
         </div>
 
         {vessel && (
@@ -157,7 +160,7 @@ export default function VesselSheet({ vessel, onClose }: VesselSheetProps) {
               <button
                 onClick={onClose}
                 aria-label="Close"
-                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[#1E3A5F]/50 bg-[#0C2340] transition-colors active:bg-[#1E3A5F]/40"
+                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[#1E3A5F]/50 bg-[#0C2340] transition-colors active:bg-[#1E3A5F]/40"
               >
                 <svg
                   width="16"
@@ -195,7 +198,7 @@ export default function VesselSheet({ vessel, onClose }: VesselSheetProps) {
                   <p className="font-[system-ui] text-sm font-semibold text-[#D4A853]">
                     Verified on YachtRegistry
                   </p>
-                  <p className="font-[system-ui] text-[11px] text-[#D4A853]/60">
+                  <p className="font-[system-ui] text-[11px] text-[#D4A853]/70">
                     On-chain since{" "}
                     {vessel.registeredAt
                       ? formatDate(vessel.registeredAt)
@@ -224,7 +227,7 @@ export default function VesselSheet({ vessel, onClose }: VesselSheetProps) {
                   <p className="font-[system-ui] text-sm font-medium text-[#64748B]">
                     Not Registered
                   </p>
-                  <p className="font-[system-ui] text-[11px] text-[#475569]">
+                  <p className="font-[system-ui] text-[11px] text-[#64748B]">
                     AIS data only — not verified on-chain
                   </p>
                 </div>
@@ -305,20 +308,26 @@ export default function VesselSheet({ vessel, onClose }: VesselSheetProps) {
               />
             </div>
 
-            {/* Owner info for registered vessels */}
+            {/* Owner info + Message button for registered vessels */}
             {vessel.registered && vessel.ownerWallet && (
-              <div className="rounded-xl border border-[#1E3A5F]/40 bg-[#0C2340]/60 px-4 py-3">
-                <p className="mb-1 font-[system-ui] text-[10px] font-medium text-[#64748B] uppercase tracking-widest">
-                  Owner Wallet
-                </p>
-                <p className="font-[monospace] text-sm text-[#94A3B8] tracking-wide">
-                  {truncateAddress(vessel.ownerWallet)}
-                </p>
+              <div className="space-y-3">
+                <div className="rounded-xl border border-[#1E3A5F]/40 bg-[#0C2340]/60 px-4 py-3">
+                  <p className="mb-1 font-[system-ui] text-[11px] font-medium text-[#64748B] uppercase tracking-widest">
+                    Owner Wallet
+                  </p>
+                  <p className="font-[monospace] text-sm text-[#94A3B8] tracking-wide">
+                    {truncateAddress(vessel.ownerWallet)}
+                  </p>
+                </div>
+                <ChatOwnerButton
+                  ownerWallet={vessel.ownerWallet}
+                  vesselName={vessel.name}
+                />
               </div>
             )}
 
             {/* Last update */}
-            <p className="mt-4 text-center font-[system-ui] text-[10px] text-[#475569] tracking-wide">
+            <p className="mt-4 text-center font-[system-ui] text-[11px] text-[#64748B] tracking-wide">
               Last AIS report:{" "}
               {new Date(vessel.lastPositionUtc).toLocaleTimeString("en-GB", {
                 hour: "2-digit",
@@ -330,6 +339,49 @@ export default function VesselSheet({ vessel, onClose }: VesselSheetProps) {
         )}
       </div>
     </>
+  );
+}
+
+/* ── Chat Owner Button ────────────────────────────────────── */
+
+function ChatOwnerButton({
+  ownerWallet,
+  vesselName,
+}: {
+  ownerWallet: string;
+  vesselName: string;
+}) {
+  const { sendChat, loading, error } = useChatWithUser(ownerWallet);
+
+  return (
+    <div>
+      <button
+        onClick={() =>
+          sendChat(`Hi — I'm interested in daywork opportunities on ${vesselName}`)
+        }
+        disabled={loading}
+        className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#3B82F6]/30 bg-[#3B82F6]/10 px-4 py-3 font-[system-ui] text-sm font-semibold text-[#3B82F6] transition-colors active:bg-[#3B82F6]/20 disabled:opacity-50"
+      >
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
+        </svg>
+        {loading ? "Opening chat…" : "Message Owner"}
+      </button>
+      {error && (
+        <p className="mt-1 text-center font-[system-ui] text-[11px] text-[#EF4444]">
+          {error}
+        </p>
+      )}
+    </div>
   );
 }
 
@@ -348,7 +400,7 @@ function StatCard({
     <div className="rounded-xl border border-[#1E3A5F]/30 bg-[#0C2340]/40 px-3.5 py-3">
       <div className="mb-1.5 flex items-center gap-1.5 text-[#475569]">
         {icon}
-        <span className="font-[system-ui] text-[10px] font-medium uppercase tracking-widest">
+        <span className="font-[system-ui] text-[11px] font-medium uppercase tracking-widest">
           {label}
         </span>
       </div>

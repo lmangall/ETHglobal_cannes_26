@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Deploy YachtRegistry to World Chain Sepolia and wire up all config files.
+# Deploy YachtRegistry to World Chain Mainnet and wire up all config files.
 # Usage: ./deploy.sh
 #
 # Prerequisites:
-#   1. Fund deployer 0xDC7D67Fc543D3737Fd200B443cE25821501B5caf with any amount of
-#      World Chain Sepolia ETH from: https://www.alchemy.com/faucets/world-chain-sepolia
+#   1. Fund deployer 0xDC7D67Fc543D3737Fd200B443cE25821501B5caf with ~0.02 ETH
+#      on World Chain mainnet (bridge from Ethereum L1 or use a fast bridge)
 #   2. Run this script from the contracts/ directory
 
-RPC_URL="https://worldchain-sepolia.g.alchemy.com/public"
-PRIVATE_KEY="0x507952c2fe83ad966ef5c489f318c6fd0610124309d51e957a62ac8520d96e9a"
+RPC_URL="https://worldchain-mainnet.g.alchemy.com/public"
+PRIVATE_KEY="${DEPLOYER_PRIVATE_KEY:?Set DEPLOYER_PRIVATE_KEY in your environment or .env}"
 DEPLOYER="0xDC7D67Fc543D3737Fd200B443cE25821501B5caf"
 ENV_FILE="../app/.env.local"
 CRE_TOML="../cre-workflows/ais-oracle/cre.toml"
@@ -22,7 +22,7 @@ echo "$BALANCE ETH"
 if [ "$BALANCE" = "0.000000000000000000" ]; then
   echo "ERROR: Deployer has no funds. Fund it first:"
   echo "  Address: $DEPLOYER"
-  echo "  Faucet:  https://www.alchemy.com/faucets/world-chain-sepolia"
+  echo "  Bridge:  https://worldchain-mainnet.bridge.alchemy.com"
   exit 1
 fi
 
@@ -50,7 +50,7 @@ forge verify-contract "$REGISTRY_ADDRESS" src/YachtRegistry.sol:YachtRegistry \
   --constructor-args "$(cast abi-encode 'constructor(address)' "$DEPLOYER")" \
   --rpc-url "$RPC_URL" \
   --verifier blockscout \
-  --verifier-url "https://worldchain-sepolia.explorer.alchemy.com/api" 2>&1 || echo "(Verification may take a moment)"
+  --verifier-url "https://worldchain-mainnet.explorer.alchemy.com/api" 2>&1 || echo "(Verification may take a moment)"
 
 echo ""
 echo "=== Updating config files ==="
@@ -70,6 +70,6 @@ fi
 echo ""
 echo "=== Done ==="
 echo "YachtRegistry: $REGISTRY_ADDRESS"
-echo "Chain: World Chain Sepolia (4801)"
+echo "Chain: World Chain Mainnet (480)"
 echo "Forwarder: $DEPLOYER (temporary — update after CRE deployment)"
-echo "Explorer: https://worldchain-sepolia.explorer.alchemy.com/address/$REGISTRY_ADDRESS"
+echo "Explorer: https://worldscan.org/address/$REGISTRY_ADDRESS"

@@ -2,7 +2,7 @@
  * CRE Workflow: AIS Oracle for Vessel Registration
  *
  * HTTP trigger → fetch API key via runtime.getSecret → HTTP GET (Datalastic API)
- * → consensus → EVM write to YachtRegistry on World Chain Sepolia.
+ * → consensus → EVM write to YachtRegistry on World Chain Mainnet.
  *
  * Uses runtime.getSecret() for the API key so simulation works end-to-end.
  * For production with enclave-level secrecy, switch to ConfidentialHTTPClient
@@ -42,7 +42,7 @@ interface WorkflowResult {
 // --- Constants ---
 
 const WORLD_CHAIN_SELECTOR =
-  EVMClient.SUPPORTED_CHAIN_SELECTORS["ethereum-testnet-sepolia-worldchain-1"];
+  EVMClient.SUPPORTED_CHAIN_SELECTORS["ethereum-mainnet-worldchain-1"];
 
 const YACHT_REGISTRY_ADDRESS: Address =
   "0xdEd817861eD9d2E5a8d0301C537E122a797C3EC9";

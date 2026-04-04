@@ -1,6 +1,6 @@
 # Who's Around Map — Feature 4 Demo Guide
 
-The map is the main screen of the Mini App. It shows real-time AIS vessel positions from the Datalastic API, cross-referenced with the YachtRegistry smart contract on World Chain Sepolia to highlight verified vessels.
+The map is the main screen of the Mini App. It shows real-time AIS vessel positions from the Datalastic API, cross-referenced with the YachtRegistry smart contract on World Chain to highlight verified vessels.
 
 ---
 

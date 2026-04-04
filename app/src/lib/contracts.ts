@@ -1,6 +1,6 @@
 // Contract addresses — update after deployment
 export const YACHT_REGISTRY_ADDRESS = "0xdEd817861eD9d2E5a8d0301C537E122a797C3EC9" as `0x${string}`;
-export const CREW_ATTESTATION_ADDRESS = "0x408B8eb461E41070eEEE3c6d02E89500C94ce7c5" as `0x${string}`;
+export const CREW_ATTESTATION_ADDRESS = "0x9437434A19b47c6e4B73a4c78a9921AD9cbCCAEe" as `0x${string}`;
 
 // ABIs will be imported from Foundry artifacts after compilation
 // For now, minimal ABI fragments for the functions we call

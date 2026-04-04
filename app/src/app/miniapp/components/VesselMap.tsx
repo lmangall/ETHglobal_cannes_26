@@ -68,28 +68,81 @@ function userLocationIcon() {
 
 /* ── Map Controls ──────────────────────────────────────────── */
 
-function RecenterButton({ lat, lon }: { lat: number; lon: number }) {
+const TILES = {
+  dark: "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+  light: "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+  satellite: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+} as const;
+
+const THEME_ORDER = ["dark", "light", "satellite"] as const;
+
+type MapTheme = keyof typeof TILES;
+
+function MapControls({
+  lat,
+  lon,
+  theme,
+  onToggle,
+}: {
+  lat: number;
+  lon: number;
+  theme: MapTheme;
+  onToggle: () => void;
+}) {
   const map = useMap();
+
+  const btnClass =
+    "flex h-12 w-12 items-center justify-center rounded-full border border-[#1E3A5F] bg-[#0B1426]/90 shadow-lg shadow-black/40 backdrop-blur-sm transition-all active:scale-95";
+
   return (
-    <button
-      onClick={() => map.flyTo([lat, lon], 13, { duration: 0.8 })}
-      aria-label="Center on my location"
-      className="absolute bottom-28 right-4 z-[1000] flex h-12 w-12 items-center justify-center rounded-full border border-[#1E3A5F] bg-[#0B1426]/90 shadow-lg shadow-black/40 backdrop-blur-sm transition-all active:scale-95"
-    >
-      <svg
-        width="22"
-        height="22"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="#3B82F6"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
+    <div className="absolute bottom-24 right-4 z-[1000] flex flex-col gap-3">
+      {/* Theme toggle */}
+      <button
+        onClick={onToggle}
+        aria-label={`Switch map style (current: ${theme})`}
+        className={btnClass}
       >
-        <circle cx="12" cy="12" r="3" />
-        <path d="M12 2v4M12 18v4M2 12h4M18 12h4" />
-      </svg>
-    </button>
+        {theme === "dark" ? (
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round">
+            <circle cx="12" cy="12" r="5" />
+            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
+          </svg>
+        ) : theme === "light" ? (
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M13 7L9 3 5 7l4 4" />
+            <path d="M17 11l4 4-4 4-4-4" />
+            <path d="M8 12l4 4" />
+            <path d="M16 8l-4-4" />
+            <circle cx="12" cy="12" r="3" />
+          </svg>
+        ) : (
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2" strokeLinecap="round">
+            <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
+          </svg>
+        )}
+      </button>
+
+      {/* Recenter */}
+      <button
+        onClick={() => map.flyTo([lat, lon], 16, { duration: 0.8 })}
+        aria-label="Center on my location"
+        className={btnClass}
+      >
+        <svg
+          width="22"
+          height="22"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="#3B82F6"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <circle cx="12" cy="12" r="3" />
+          <path d="M12 2v4M12 18v4M2 12h4M18 12h4" />
+        </svg>
+      </button>
+    </div>
   );
 }
 
@@ -200,7 +253,7 @@ function VesselHud({
         <span className="font-[system-ui] text-xs font-semibold text-white/80 tabular-nums">
           {loading ? "--" : total}
         </span>
-        <span className="font-[system-ui] text-[10px] text-[#64748B] uppercase tracking-wider">
+        <span className="font-[system-ui] text-[11px] text-[#64748B] uppercase tracking-wider">
           vessels
         </span>
       </div>
@@ -212,7 +265,7 @@ function VesselHud({
             <span className="font-[system-ui] text-xs font-semibold text-[#D4A853] tabular-nums">
               {registered}
             </span>
-            <span className="font-[system-ui] text-[10px] text-[#64748B] uppercase tracking-wider">
+            <span className="font-[system-ui] text-[11px] text-[#64748B] uppercase tracking-wider">
               verified
             </span>
           </div>
@@ -236,6 +289,7 @@ export default function VesselMap({ onSelectVessel }: VesselMapProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [fetchingVessels, setFetchingVessels] = useState(false);
+  const [theme, setTheme] = useState<MapTheme>("dark");
   const fetchCenter = useRef<{ lat: number; lon: number } | null>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -337,12 +391,21 @@ export default function VesselMap({ onSelectVessel }: VesselMapProps) {
         style={{ background: "#0B1426" }}
       >
         <TileLayer
-          url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+          key={theme}
+          url={TILES[theme]}
           maxZoom={19}
         />
 
         <MapEventHandler onMoveEnd={handleMapMoveEnd} />
-        <RecenterButton lat={userPos.lat} lon={userPos.lon} />
+        <MapControls
+          lat={userPos.lat}
+          lon={userPos.lon}
+          theme={theme}
+          onToggle={() => {
+            const idx = THEME_ORDER.indexOf(theme);
+            setTheme(THEME_ORDER[(idx + 1) % THEME_ORDER.length]);
+          }}
+        />
 
         {/* User location marker */}
         <Marker
@@ -400,7 +463,7 @@ export default function VesselMap({ onSelectVessel }: VesselMapProps) {
       {fetchingVessels && vessels.length > 0 && (
         <div className="absolute top-4 right-4 z-[1000] flex items-center gap-2 rounded-lg border border-[#1E3A5F]/40 bg-[#0B1426]/70 px-3 py-1.5 backdrop-blur-sm">
           <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#3B82F6]" />
-          <span className="font-[system-ui] text-[10px] text-[#64748B] uppercase tracking-wider">
+          <span className="font-[system-ui] text-[11px] text-[#64748B] uppercase tracking-wider">
             Updating
           </span>
         </div>

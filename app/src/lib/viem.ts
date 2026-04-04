@@ -1,9 +1,9 @@
 import { createPublicClient, createWalletClient, http } from "viem";
-import { worldchainSepolia } from "viem/chains";
+import { worldchain } from "viem/chains";
 import { privateKeyToAccount } from "viem/accounts";
 
 export const publicClient = createPublicClient({
-  chain: worldchainSepolia,
+  chain: worldchain,
   transport: http(),
 });
 
@@ -14,7 +14,7 @@ export function getWalletClient() {
   const account = privateKeyToAccount(key as `0x${string}`);
   return createWalletClient({
     account,
-    chain: worldchainSepolia,
+    chain: worldchain,
     transport: http(),
   });
 }

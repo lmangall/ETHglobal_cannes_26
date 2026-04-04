@@ -18,7 +18,7 @@ Three audiences, three angles. Tailor the pitch to what each cares about.
 ### What to Show
 
 1. Run `cre workflow simulate . --target staging-settings --broadcast` live
-2. Point to the on-chain tx: [`0x2ea638...`](https://worldchain-sepolia.explorer.alchemy.com/tx/0x2ea63856d3fa0110b05051f41d1b2df27f3074714447b2830b240a9d3691a68b)
+2. Point to the on-chain tx (Sepolia proof): [`0x2ea638...`](https://worldchain-sepolia.explorer.alchemy.com/tx/0x2ea63856d3fa0110b05051f41d1b2df27f3074714447b2830b240a9d3691a68b)
 3. Walk through `main.ts` — 172 lines, clean pipeline, real external API
 
 ### Key Talking Points
@@ -50,7 +50,7 @@ Three audiences, three angles. Tailor the pitch to what each cares about.
 
 1. World ID verification flow in the Mini App (scan → verify → register)
 2. Nullifier as permanent identity anchor — same person can't register twice
-3. YachtRegistry and CrewAttestation contracts live on World Chain Sepolia
+3. YachtRegistry and CrewAttestation contracts live on World Chain Mainnet
 4. Crew reputation system: attestations are tied to World ID nullifiers, not wallets
 
 ### Key Talking Points

@@ -29,7 +29,7 @@ The LLM must fetch each URL below, extract the specified values, and populate th
 **Extract:**
 - Mainnet chain ID
 - Mainnet RPC URL
-- Testnet (Sepolia) chain ID
+- Mainnet (480) chain ID
 - Testnet RPC URL
 - USDC contract address on mainnet
 - USDC contract address on testnet
@@ -142,7 +142,7 @@ The LLM must fetch each URL below, extract the specified values, and populate th
 
 **Extract:**
 - Forwarder contract address on World Chain mainnet
-- Forwarder contract address on World Chain Sepolia
+- Forwarder contract address on World Chain Mainnet
 - What the forwarder does and whether `YachtRegistry.sol` needs to inherit from a base contract
 
 **Why:** Consumer contracts that receive CRE workflow reports must be built to accept the forwarder. This changes the Solidity contract design.
@@ -200,7 +200,7 @@ The LLM must fetch each URL below, extract the specified values, and populate th
 - How to set constructor arguments
 - How to verify contract on World Chain explorer
 
-**Why:** Contracts need to be deployed to World Chain Sepolia for the demo. Foundry is preferred over Hardhat for speed at a hackathon.
+**Why:** Contracts need to be deployed to World Chain Mainnet for the demo. Foundry is preferred over Hardhat for speed at a hackathon.
 
 ---
 
@@ -223,12 +223,12 @@ After running Phase 0 research, populate this table before writing any code.
 |---|---|---|
 | World Chain mainnet chain ID | ✅ CONFIRMED | `480` (0x1e0) |
 | World Chain mainnet RPC URL | ✅ CONFIRMED | `https://worldchain-mainnet.g.alchemy.com/public` |
-| World Chain Sepolia chain ID | ✅ CONFIRMED | `4801` (0x12C1) |
-| World Chain Sepolia RPC URL | ✅ CONFIRMED | `https://worldchain-sepolia.g.alchemy.com/public` |
-| World Chain block explorer | ✅ CONFIRMED | mainnet: `https://worldscan.org` / sepolia: `https://sepolia.worldscan.org` |
+| World Chain Mainnet chain ID | ✅ CONFIRMED | `480` (0x1E0) |
+| World Chain Mainnet RPC URL | ✅ CONFIRMED | `https://worldchain-mainnet.g.alchemy.com/public` |
+| World Chain block explorer | ✅ CONFIRMED | `https://worldscan.org` / `https://worldchain-mainnet.explorer.alchemy.com` |
 | World Chain native gas token | ✅ CONFIRMED | ETH (18 decimals) |
 | World Chain USDC address (mainnet) | ✅ CONFIRMED | `0x79A02482A880bCE3F13e09Da970dC34db4CD24d1` |
-| World Chain USDC address (Sepolia) | ✅ CONFIRMED | `0x66145f38cBAC35Ca6F1Dfb4914dF98F1614aeA88` |
+| World Chain USDC address (Mainnet) | ✅ CONFIRMED | `0x66145f38cBAC35Ca6F1Dfb4914dF98F1614aeA88` |
 | World ID 4.0 live status | ✅ CONFIRMED | Live — Phase 1 migration running through June 1, 2026. V4 verify endpoint is live. |
 | IDKit package | ✅ CONFIRMED | `@worldcoin/idkit-core` v4.x (vanilla JS) / `@worldcoin/idkit` (React) |
 | IDKit verify endpoint | ✅ CONFIRMED | `POST https://developer.world.org/api/v4/verify/{rp_id}` — no auth required |
@@ -239,7 +239,7 @@ After running Phase 0 research, populate this table before writing any code.
 | IDKit rp_context required | ✅ CONFIRMED | `{ rp_id, nonce, created_at, expires_at, signature }` — mandatory in v4 |
 | Nullifier behaviour | ⚠️ UPDATED | V4: nullifiers are one-time-use; `session_id` replaces them as stable user link |
 | Signal binding | ✅ CONFIRMED | bound at proof time, cannot be tampered |
-| World ID on-chain verifier (v3 legacy) | ✅ CONFIRMED | World Chain mainnet: `0x17B354dD2595411ff79041f930e491A4Df39A278` / Sepolia: `0x57f928158C3EE7CDad1e4D8642503c4D0201f611` |
+| World ID on-chain verifier (v3 legacy) | ✅ CONFIRMED | World Chain mainnet: `0x17B354dD2595411ff79041f930e491A4Df39A278` |
 | World ID on-chain verifier (v4) | ⚠️ NOT READY | V4 `WorldIDVerifier` is "in preview and not yet deployed to mainnet" — use v3 on-chain or v4 backend verify |
 | MiniKit package | ✅ CONFIRMED | `@worldcoin/minikit-js` — sub-imports: `/commands`, `/siwe`, `/address-book` |
 | MiniKit.verify() | ❌ DEPRECATED | Removed in MiniKit 2.0 — all verification now through IDKit |
@@ -265,10 +265,10 @@ After running Phase 0 research, populate this table before writing any code.
 | CRE EVM Write | ✅ CONFIRMED | Two-step: `runtime.report({ encodedPayload, encoderName: "evm", signingAlgo: "ecdsa", hashingAlgo: "keccak256" })` → `evmClient.writeReport(runtime, { receiver, report, gasConfig })` |
 | CRE secrets injection | ✅ CONFIRMED | Simulation: `secrets.yaml` + `.env` file. Deployed: Vault DON (`cre secrets create/update/delete`). In-code: `{{.key}}` template syntax for Confidential HTTP |
 | CRE World Chain mainnet support | ✅ CONFIRMED | CLI v1.0.11+, TS SDK v1.0.9+ |
-| CRE World Chain Sepolia support | ✅ CONFIRMED | CLI v1.0.7+, TS SDK v1.0.7+ |
+| CRE World Chain Mainnet support | ✅ CONFIRMED | CLI v1.0.7+, TS SDK v1.0.7+ |
 | CRE simulation makes real API calls | ✅ CONFIRMED | stated explicitly in docs |
 | CRE forwarder (World Chain mainnet) | ✅ CONFIRMED | KeystoneForwarder: `0x98B8335d29Aca40840Ed8426dA1A0aAa8677d8D1` / MockForwarder (sim): `0x6E9EE680ef59ef64Aa8C7371279c27E496b5eDc1` |
-| CRE forwarder (World Chain Sepolia) | ✅ CONFIRMED | KeystoneForwarder: `0x76c9cf548b4179F8901cda1f8623568b58215E62` / MockForwarder (sim): `0x6E9EE680ef59ef64Aa8C7371279c27E496b5eDc1` |
+| CRE forwarder (World Chain Mainnet) | ✅ CONFIRMED | KeystoneForwarder: `0x98B8335d29Aca40840Ed8426dA1A0aAa8677d8D1` / MockForwarder (sim): `0x6E9EE680ef59ef64Aa8C7371279c27E496b5eDc1` |
 | CRE consumer contract interface | ✅ CONFIRMED | Must inherit `ReceiverTemplate` (implements `IReceiver` + `IERC165`). Forwarder address in constructor. Override `_processReport(bytes calldata report)`. Forwarder calls `onReport(metadata, report)`. |
 | CRE deploy requires Early Access | ✅ CONFIRMED | `cre account access` to check/request. Simulation works without approval. |
 | AIS stream endpoint | ✅ CONFIRMED | WebSocket: `wss://stream.aisstream.io/v0/stream` — **NO HTTP REST endpoint exists** |
@@ -277,7 +277,7 @@ After running Phase 0 research, populate this table before writing any code.
 | AIS subscription message | ✅ CONFIRMED | `{ Apikey, BoundingBoxes, FiltersShipMMSI (max 50), FilterMessageTypes }` |
 | AIS PositionReport fields | ✅ CONFIRMED | `UserID` (=MMSI), `Latitude`, `Longitude`, `Sog`, `Cog`, `TrueHeading`, `NavigationalStatus`, `Timestamp`, etc. |
 | AIS rate limits | ⚠️ UNCERTAIN | Throttled at API key/user level, max 1 subscription update/sec. No explicit free-tier limits published. |
-| viem worldchain built-in config | ✅ CONFIRMED | `import { worldchain, worldchainSepolia } from 'viem/chains'` — first-class support, no custom definition needed |
+| viem worldchain built-in config | ✅ CONFIRMED | `import { worldchain } from 'viem/chains'` — first-class support, no custom definition needed |
 | Foundry deploy command | ✅ CONFIRMED | `forge create src/Contract.sol:Contract --rpc-url <URL> --private-key <KEY> --constructor-args <ARGS>` |
 | Foundry verify on World Chain | ✅ CONFIRMED | `forge verify-contract --verifier blockscout --verifier-url https://worldchain-mainnet.explorer.alchemy.com/api --chain 480 <ADDR> src/Contract.sol:Contract` |
 | Developer Portal credentials | ✅ CONFIRMED | `app_id` (format `app_[hex]`), `rp_id`, `signing_key` — all from https://developer.worldcoin.org |
@@ -529,7 +529,7 @@ INPUT: { mmsi, idkit_proof }
 
 **TO VERIFY before building:**
 - CRE TypeScript SDK exact package and imports (0.7)
-- CRE forwarder address on World Chain Sepolia (0.8)
+- CRE forwarder address on World Chain Mainnet (0.8)
 - CRE consumer contract interface — does YachtRegistry need to inherit anything? (0.9)
 - AIS API endpoint for single vessel lookup by MMSI (0.10)
 - AIS API key requirement (0.10)
@@ -722,7 +722,7 @@ ProfilePublic {
 // ProfileView.tsx
   IF viewer_mode == "social":
     show: display_name, role, vessel name
-    show: "Say hi" → MiniKit.chat({ recipient: profile.wallet })
+    show: "Say hi" → useChatWithUser(wallet) → MiniKit.chat({ to: [username] })
     hide: full attestation history
 
   IF viewer_mode == "pro":
@@ -733,8 +733,9 @@ ProfilePublic {
     hide: nothing — full transparency is the feature
 ```
 
-**TO VERIFY before building:**
-- MiniKit.chat() exact API signature — does it take wallet address or World username? (0.5)
+**VERIFIED:**
+- MiniKit.chat() takes World usernames (NOT wallet addresses) — resolve via `MiniKit.getUserByAddress(wallet)`
+- See [chat-demo-guide.md](chat-demo-guide.md) for full implementation details
 
 ---
 
@@ -877,7 +878,7 @@ MiniKit (via sendTransaction)   ← ⚠️ TO VERIFY exact pattern
 | Agency agent gate | `@worldcoin/agentkit` | latest | https://docs.world.org/agents/agent-kit/integrate |
 | Agent identity registry | AgentBook | World Chain | https://docs.world.org/agents/agent-kit/integrate |
 | Oracle layer | CRE TypeScript SDK | CLI v1.0.11+, TS v1.0.9+ | https://docs.chain.link/cre |
-| Oracle chain support | World Chain (mainnet + Sepolia) | confirmed | https://docs.chain.link/cre/supported-networks |
+| Oracle chain support | World Chain Mainnet | confirmed | https://docs.chain.link/cre/supported-networks |
 | Oracle AIS call | CRE Confidential HTTP | — | https://docs.chain.link/cre/capabilities/confidential-http |
 | Chain | World Chain | `eip155:480` | https://docs.world.org/world-chain |
 | Contract language | Solidity | ^0.8.x | — |
@@ -950,7 +951,7 @@ Before submitting, verify each item below is demonstrable in the demo.
 | Hours | Task | Depends on |
 |---|---|---|
 | 0–1 | Phase 0 research — fetch all docs, fill verification table | — |
-| 1–2 | Deploy World Chain Sepolia contracts (YachtRegistry + CrewAttestation) | 0.8, 0.9, 0.11, 0.12 |
+| 1–2 | Deploy World Chain Mainnet contracts (YachtRegistry + CrewAttestation) | 0.8, 0.9, 0.11, 0.12 |
 | 2–4 | World ID proof flow (Feature 1) | 0.2, 0.3 |
 | 4–7 | CRE workflow — AIS oracle + EVM write (Feature 2) | 0.7, 0.8, 0.9, 0.10 |
 | 7–9 | Attestation flow (Feature 3) | Feature 1, contracts |

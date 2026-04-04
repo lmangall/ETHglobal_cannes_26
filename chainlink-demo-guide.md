@@ -26,7 +26,7 @@ CRE Workflow (HTTP Trigger)
   └── 6. EVMClient.writeReport()               ← On-chain Write
           │
           ▼
-    YachtRegistry (World Chain Sepolia)
+    YachtRegistry (World Chain Mainnet)
     0xdEd817861eD9d2E5a8d0301C537E122a797C3EC9
 ```
 
@@ -59,10 +59,10 @@ To actually write the result on-chain (no deploy access needed):
 cre workflow simulate . --target staging-settings --broadcast
 ```
 
-This submits the signed transaction to World Chain Sepolia via the MockKeystoneForwarder.
+This submits the signed transaction to World Chain Mainnet via the MockKeystoneForwarder.
 Requires `CRE_ETH_PRIVATE_KEY` in `.env` (funded wallet for gas).
 
-**Proven on-chain tx:** [`0x2ea63856d3fa0110b05051f41d1b2df27f3074714447b2830b240a9d3691a68b`](https://worldchain-sepolia.explorer.alchemy.com/tx/0x2ea63856d3fa0110b05051f41d1b2df27f3074714447b2830b240a9d3691a68b)
+**Proven on-chain tx (Sepolia):** [`0x2ea63856d3fa0110b05051f41d1b2df27f3074714447b2830b240a9d3691a68b`](https://worldchain-sepolia.explorer.alchemy.com/tx/0x2ea63856d3fa0110b05051f41d1b2df27f3074714447b2830b240a9d3691a68b)
 
 When prompted for HTTP trigger payload, use any of these real yachts:
 
@@ -110,7 +110,7 @@ When prompted for HTTP trigger payload, use any of these real yachts:
 
 ## Deployed Contract
 
-- **YachtRegistry:** [`0xdEd817861eD9d2E5a8d0301C537E122a797C3EC9`](https://worldchain-sepolia.explorer.alchemy.com/address/0xdEd817861eD9d2E5a8d0301C537E122a797C3EC9) on World Chain Sepolia (chain ID 4801)
+- **YachtRegistry:** [`0xdEd817861eD9d2E5a8d0301C537E122a797C3EC9`](https://worldscan.org/address/0xdEd817861eD9d2E5a8d0301C537E122a797C3EC9) on World Chain Mainnet (chain ID 480)
 - Forwarder: `0xDC7D67Fc543D3737Fd200B443cE25821501B5caf` (deployer wallet, used as forwarder for CRE simulation/broadcast)
 - `registerVessel()` emits `VesselRegistered` event on-chain
 - 8/8 Foundry tests passing
@@ -119,7 +119,7 @@ When prompted for HTTP trigger payload, use any of these real yachts:
 
 ## Ask for the Chainlink Team
 
-> I'm building a maritime vessel verification oracle with CRE. My simulation passes end-to-end with real Datalastic API data, and `--broadcast` mode produces real on-chain transactions on World Chain Sepolia. I use Confidential HTTP for private API credentials and EVM Write to World Chain.
+> I'm building a maritime vessel verification oracle with CRE. My simulation passes end-to-end with real Datalastic API data, and `--broadcast` mode produces real on-chain transactions on World Chain Mainnet. I use Confidential HTTP for private API credentials and EVM Write to World Chain.
 >
 > I requested deploy access under **l.mangallon@gmail.com** (org **org_d6iylYyvWEMqoZf0**) — can you expedite it so I can do a full DON deployment for the demo?
 
@@ -131,7 +131,7 @@ When prompted for HTTP trigger payload, use any of these real yachts:
 cre-workflows/ais-oracle/
 ├── main.ts              ← Full CRE workflow
 ├── cre.toml             ← Workflow config (trigger, secrets, target chain+contract)
-├── project.yaml         ← RPC endpoints (World Chain Sepolia)
+├── project.yaml         ← RPC endpoints (World Chain Mainnet)
 ├── workflow.yaml        ← Staging/production workflow config
 ├── secrets.yaml         ← AIS_API_KEY mapping
 ├── config.staging.json  ← Gas limit config for --broadcast

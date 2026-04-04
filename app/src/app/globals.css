@@ -19,10 +19,36 @@
   }
 }
 
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overscroll-behavior-y: contain;
+}
+
+/* Smooth momentum scrolling on iOS */
+[class*="overflow-y-auto"],
+[class*="overflow-y-scroll"] {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+}
+
+/* Prevent tap highlight on mobile */
+button, a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Safe area padding utility for full-bleed layouts */
+@supports (padding: env(safe-area-inset-top)) {
+  .safe-top { padding-top: env(safe-area-inset-top); }
+  .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
 }
 
 /* Leaflet tooltip — dark maritime theme */

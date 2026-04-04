@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@types/leaflet": "^1.9.21",
+    "@worldcoin/agentkit": "^0.1.6",
     "@worldcoin/idkit-core": "^4.1.0",
     "@worldcoin/minikit-js": "^2.0.2",
     "leaflet": "^1.9.4",
