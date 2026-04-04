@@ -14,32 +14,40 @@ import type { EnrichedVessel } from "@/lib/ais-feed";
 
 /* ── Marker Factories ─────────────────────────────────────── */
 
-function registeredIcon(heading: number) {
+function registeredIcon(heading: number, name: string) {
+  const label = name.length > 14 ? name.slice(0, 13) + "…" : name;
   return L.divIcon({
     className: "",
-    iconSize: [36, 36],
+    iconSize: [36, 56],
     iconAnchor: [18, 18],
-    html: `<svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="18" cy="18" r="16" fill="#0C2340" stroke="#D4A853" stroke-width="2"/>
-      <circle cx="18" cy="18" r="10" fill="#1A3A5C" stroke="#3B82F6" stroke-width="1.5" opacity="0.9"/>
-      <polygon points="18,6 21,15 18,13 15,15" fill="#D4A853" transform="rotate(${heading}, 18, 18)" opacity="0.95"/>
-      <circle cx="18" cy="18" r="3" fill="#D4A853"/>
-      <circle cx="27" cy="9" r="6" fill="#16A34A" stroke="#0C2340" stroke-width="1.5"/>
-      <path d="M24.5 9L26.5 11L30 7.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-    </svg>`,
+    html: `<div style="position:relative;display:flex;flex-direction:column;align-items:center">
+      <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="18" cy="18" r="16" fill="#0C2340" stroke="#D4A853" stroke-width="2"/>
+        <circle cx="18" cy="18" r="10" fill="#1A3A5C" stroke="#3B82F6" stroke-width="1.5" opacity="0.9"/>
+        <polygon points="18,6 21,15 18,13 15,15" fill="#D4A853" transform="rotate(${heading}, 18, 18)" opacity="0.95"/>
+        <circle cx="18" cy="18" r="3" fill="#D4A853"/>
+        <circle cx="27" cy="9" r="6" fill="#16A34A" stroke="#0C2340" stroke-width="1.5"/>
+        <path d="M24.5 9L26.5 11L30 7.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
+      <span style="margin-top:2px;font-size:9px;font-weight:600;font-family:system-ui;color:#D4A853;text-shadow:0 1px 3px rgba(0,0,0,0.8);white-space:nowrap;letter-spacing:0.3px">${label}</span>
+    </div>`,
   });
 }
 
-function unregisteredIcon(heading: number) {
+function unregisteredIcon(heading: number, name: string) {
+  const label = name.length > 14 ? name.slice(0, 13) + "…" : name;
   return L.divIcon({
     className: "",
-    iconSize: [28, 28],
+    iconSize: [28, 46],
     iconAnchor: [14, 14],
-    html: `<svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="14" cy="14" r="12" fill="#1E293B" stroke="#475569" stroke-width="1.5" opacity="0.85"/>
-      <polygon points="14,5 16.5,12 14,10.5 11.5,12" fill="#94A3B8" transform="rotate(${heading}, 14, 14)" opacity="0.8"/>
-      <circle cx="14" cy="14" r="2.5" fill="#64748B"/>
-    </svg>`,
+    html: `<div style="position:relative;display:flex;flex-direction:column;align-items:center">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="14" cy="14" r="12" fill="#1E293B" stroke="#475569" stroke-width="1.5" opacity="0.85"/>
+        <polygon points="14,5 16.5,12 14,10.5 11.5,12" fill="#94A3B8" transform="rotate(${heading}, 14, 14)" opacity="0.8"/>
+        <circle cx="14" cy="14" r="2.5" fill="#64748B"/>
+      </svg>
+      <span style="margin-top:2px;font-size:8px;font-weight:500;font-family:system-ui;color:#64748B;text-shadow:0 1px 3px rgba(0,0,0,0.8);white-space:nowrap;letter-spacing:0.2px">${label}</span>
+    </div>`,
   });
 }
 
