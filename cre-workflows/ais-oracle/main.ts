@@ -12,10 +12,10 @@ import {
   EVMClient,
   type Runtime,
   type HTTPPayload,
+  type WriteCreReportRequestJson,
   ok,
   json,
   prepareReportRequest,
-  createWriteCreReportRequest,
   Runner,
 } from "@chainlink/cre-sdk";
 import { encodeFunctionData, pad, toHex, type Hex, type Address } from "viem";
@@ -28,16 +28,21 @@ interface RegisterVesselInput {
   owner_wallet: string;
 }
 
+interface WorkflowResult {
+  success: boolean;
+  mmsi: string;
+  error: string;
+}
+
 // --- Constants ---
 
 // World Chain Sepolia chain selector for CRE
 const WORLD_CHAIN_SELECTOR =
   EVMClient.SUPPORTED_CHAIN_SELECTORS["ethereum-testnet-sepolia-worldchain-1"];
 
-// YachtRegistry contract address — set after deployment
+// YachtRegistry deployed on World Chain Sepolia
 const YACHT_REGISTRY_ADDRESS: Address =
-  (process.env.YACHT_REGISTRY_ADDRESS as Address) ??
-  "0x0000000000000000000000000000000000000000";
+  "0xdEd817861eD9d2E5a8d0301C537E122a797C3EC9";
 
 // ABI fragment for registerVessel
 const REGISTER_VESSEL_ABI = [
@@ -59,7 +64,7 @@ const REGISTER_VESSEL_ABI = [
 const onRegisterVessel = (
   runtime: Runtime<Uint8Array>,
   payload: HTTPPayload
-) => {
+): WorkflowResult => {
   // 1. Parse trigger input
   const decoder = new TextDecoder();
   const inputJson = decoder.decode(payload.input);
@@ -77,7 +82,7 @@ const onRegisterVessel = (
       request: {
         url: `https://api.datalastic.com/api/v0/vessel?api-key={{.Secrets.AIS_API_KEY}}&mmsi=${input.mmsi}`,
         method: "GET",
-        timeout: { seconds: "10" },
+        timeout: "10s",
       },
     })
     .result();
@@ -117,19 +122,15 @@ const onRegisterVessel = (
 
   // 5. Write report to World Chain → YachtRegistry
   const evmClient = new EVMClient(WORLD_CHAIN_SELECTOR);
-  evmClient
-    .writeReport(
-      runtime,
-      createWriteCreReportRequest({
-        receiver: YACHT_REGISTRY_ADDRESS,
-        report,
-      })
-    )
-    .result();
+  const writeRequest: WriteCreReportRequestJson = {
+    receiver: YACHT_REGISTRY_ADDRESS,
+    report,
+  };
+  evmClient.writeReport(runtime, writeRequest).result();
 
   runtime.log(`Vessel ${input.mmsi} registration submitted to World Chain`);
 
-  return { success: true, mmsi: input.mmsi };
+  return { success: true, mmsi: input.mmsi, error: "" };
 };
 
 // --- Workflow definition ---
@@ -140,7 +141,6 @@ const initWorkflow = () => {
   return [
     cre.handler(
       httpTrigger.trigger({
-        // Authorized keys configured during CRE deployment
         authorizedKeys: [],
       }),
       onRegisterVessel
