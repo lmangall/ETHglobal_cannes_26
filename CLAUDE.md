@@ -8,6 +8,7 @@ A maritime crew reputation and vessel verification platform built as a World App
 - [prizes.md](prizes.md) — Target hackathon prizes (Chainlink $7K + World $20K) with qualification requirements and strategy
 - [chainlink-demo-guide.md](chainlink-demo-guide.md) — CRE workflow demo: simulation, broadcast, test payloads
 - [crew-attestation-demo-guide.md](crew-attestation-demo-guide.md) — Crew attestation demo: Anvil fork testing with cast commands
+- [map-demo-guide.md](map-demo-guide.md) — Who's Around Map demo: API testing, Web2/Web3 flow, curl examples
 - [llms-txt/](llms-txt/) — LLM-friendly documentation files from providers (World, Chainlink, viem, Foundry, Next.js)
 
 ## Tech Stack

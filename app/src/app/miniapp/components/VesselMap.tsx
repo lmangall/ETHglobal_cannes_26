@@ -321,7 +321,7 @@ export default function VesselMap({ onSelectVessel }: VesselMapProps) {
     <div className="relative h-full w-full">
       <MapContainer
         center={[userPos.lat, userPos.lon]}
-        zoom={15}
+        zoom={16}
         className="h-full w-full"
         zoomControl={false}
         attributionControl={false}
