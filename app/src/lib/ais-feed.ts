@@ -94,19 +94,29 @@ export async function getNearbyVessels(
   lon: number,
   radiusNm: number = 10
 ): Promise<EnrichedVessel[]> {
-  const apiKey = process.env.DATALASTIC_API_KEY;
-  if (!apiKey) {
+  const apiKeys = [
+    process.env.DATALASTIC_API_KEY,
+    process.env.DATALASTIC_API_KEY_2,
+  ].filter(Boolean) as string[];
+
+  if (apiKeys.length === 0) {
     throw new Error("DATALASTIC_API_KEY not set");
   }
 
   const clampedRadius = Math.min(radiusNm, 50); // API max is 50 NM
 
-  const url = `${DATALASTIC_BASE}/api/v0/vessel_inradius?api-key=${apiKey}&lat=${lat}&lon=${lon}&radius=${clampedRadius}`;
-  const res = await fetch(url, { next: { revalidate: 60 } });
+  let res: Response | null = null;
+  for (const apiKey of apiKeys) {
+    const url = `${DATALASTIC_BASE}/api/v0/vessel_inradius?api-key=${apiKey}&lat=${lat}&lon=${lon}&radius=${clampedRadius}`;
+    res = await fetch(url, { next: { revalidate: 60 } });
+    if (res.ok) break;
+    // If rate-limited (402) or 429, try next key
+    if (res.status !== 402 && res.status !== 429) break;
+  }
 
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`Datalastic API error (${res.status}): ${text}`);
+  if (!res || !res.ok) {
+    const text = res ? await res.text() : "No API keys available";
+    throw new Error(`Datalastic API error (${res?.status}): ${text}`);
   }
 
   const json: DatalasticResponse = await res.json();
