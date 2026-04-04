@@ -78,7 +78,7 @@ const onRegisterVessel = (
   const confidentialHttp = new ConfidentialHTTPClient();
   const aisResponse = confidentialHttp
     .sendRequest(runtime, {
-      vaultDonSecrets: [{ key: "AIS_API_KEY", namespace: "default" }],
+      vaultDonSecrets: [{ key: "AIS_API_KEY" }],
       request: {
         url: `https://api.datalastic.com/api/v0/vessel?api-key={{.AIS_API_KEY}}&mmsi=${input.mmsi}`,
         method: "GET",
