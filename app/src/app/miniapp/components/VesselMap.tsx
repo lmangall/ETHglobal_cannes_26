@@ -5,6 +5,7 @@ import {
   MapContainer,
   TileLayer,
   Marker,
+  Tooltip,
   useMap,
   useMapEvents,
 } from "react-leaflet";
@@ -357,13 +358,34 @@ export default function VesselMap({ onSelectVessel }: VesselMapProps) {
             position={[v.lat, v.lon]}
             icon={
               v.registered
-                ? registeredIcon(v.heading)
-                : unregisteredIcon(v.heading)
+                ? registeredIcon(v.heading, v.name)
+                : unregisteredIcon(v.heading, v.name)
             }
             eventHandlers={{
               click: () => onSelectVessel(v),
             }}
-          />
+          >
+            <Tooltip
+              direction="top"
+              offset={[0, -22]}
+              className="vessel-tooltip"
+            >
+              <div style={{ fontFamily: "system-ui", fontSize: "11px", lineHeight: "1.4" }}>
+                <strong>{v.name}</strong>
+                <br />
+                <span style={{ color: "#94A3B8" }}>
+                  {v.speed < 0.5 ? "Anchored" : `${v.speed.toFixed(1)} kn`}
+                  {v.typeSpecific ? ` · ${v.typeSpecific}` : ""}
+                </span>
+                {v.registered && (
+                  <>
+                    <br />
+                    <span style={{ color: "#D4A853", fontSize: "10px" }}>Verified</span>
+                  </>
+                )}
+              </div>
+            </Tooltip>
+          </Marker>
         ))}
       </MapContainer>
 
