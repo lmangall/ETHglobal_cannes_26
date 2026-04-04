@@ -80,7 +80,7 @@ const onRegisterVessel = (
     .sendRequest(runtime, {
       vaultDonSecrets: [{ key: "AIS_API_KEY", namespace: "default" }],
       request: {
-        url: `https://api.datalastic.com/api/v0/vessel?api-key={{.Secrets.AIS_API_KEY}}&mmsi=${input.mmsi}`,
+        url: `https://api.datalastic.com/api/v0/vessel?api-key={{.AIS_API_KEY}}&mmsi=${input.mmsi}`,
         method: "GET",
         timeout: "10s",
       },
