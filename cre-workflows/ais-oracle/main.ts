@@ -1,22 +1,27 @@
 /**
  * CRE Workflow: AIS Oracle for Vessel Registration
  *
- * HTTP trigger → Confidential HTTP GET (Datalastic API) → EVM write to YachtRegistry
- * Runs on Chainlink DON, compiled to WASM via cre-compile.
+ * HTTP trigger → fetch API key via runtime.getSecret → HTTP GET (Datalastic API)
+ * → consensus → EVM write to YachtRegistry on World Chain Sepolia.
+ *
+ * Uses runtime.getSecret() for the API key so simulation works end-to-end.
+ * For production with enclave-level secrecy, switch to ConfidentialHTTPClient
+ * with vaultDonSecrets + {{.key}} templates.
  */
 
 import {
   cre,
   HTTPCapability,
-  ConfidentialHTTPClient,
+  HTTPClient,
   EVMClient,
   type Runtime,
   type HTTPPayload,
   type WriteCreReportRequestJson,
   ok,
-  json,
+  text,
   prepareReportRequest,
   Runner,
+  consensusIdenticalAggregation,
 } from "@chainlink/cre-sdk";
 import { encodeFunctionData, pad, toHex, type Hex, type Address } from "viem";
 
@@ -36,15 +41,12 @@ interface WorkflowResult {
 
 // --- Constants ---
 
-// World Chain Sepolia chain selector for CRE
 const WORLD_CHAIN_SELECTOR =
   EVMClient.SUPPORTED_CHAIN_SELECTORS["ethereum-testnet-sepolia-worldchain-1"];
 
-// YachtRegistry deployed on World Chain Sepolia
 const YACHT_REGISTRY_ADDRESS: Address =
   "0xdEd817861eD9d2E5a8d0301C537E122a797C3EC9";
 
-// ABI fragment for registerVessel
 const REGISTER_VESSEL_ABI = [
   {
     type: "function",
@@ -74,36 +76,45 @@ const onRegisterVessel = (
     `Vessel registration request: mmsi=${input.mmsi}, nullifier=${input.owner_nullifier}`
   );
 
-  // 2. Confidential HTTP GET — verify vessel exists via Datalastic API
-  const confidentialHttp = new ConfidentialHTTPClient();
-  const aisResponse = confidentialHttp
-    .sendRequest(runtime, {
-      vaultDonSecrets: [{ key: "AIS_API_KEY" }],
-      request: {
-        url: `https://api.datalastic.com/api/v0/vessel?api-key={{.AIS_API_KEY}}&mmsi=${input.mmsi}`,
-        method: "GET",
-        timeout: "10s",
-      },
-    })
-    .result();
+  // 2. Fetch API key via runtime.getSecret (works in simulation + production)
+  const apiKeySecret = runtime.getSecret({ id: "AIS_API_KEY" }).result();
+  const apiKey = apiKeySecret.value;
 
-  if (!ok(aisResponse)) {
-    runtime.log(`Datalastic API returned status ${aisResponse.statusCode}`);
+  // 3. HTTP GET — verify vessel exists via Datalastic API
+  const httpClient = new HTTPClient();
+  const fetchVessel = httpClient.sendRequest(
+    runtime,
+    (sendRequester) => {
+      const response = sendRequester
+        .sendRequest({
+          url: `https://api.datalastic.com/api/v0/vessel?api-key=${apiKey}&mmsi=${input.mmsi}`,
+          method: "GET",
+        })
+        .result();
+      return ok(response) ? text(response) : "";
+    },
+    consensusIdenticalAggregation<string>()
+  );
+
+  const rawResult = fetchVessel().result();
+  if (!rawResult) {
+    runtime.log("Vessel not found or API error");
     return { success: false, mmsi: input.mmsi, error: "vessel_not_found" };
   }
 
-  const vesselData = json(aisResponse) as {
+  const vesselData = JSON.parse(rawResult) as {
     data?: { mmsi?: string };
     meta?: { success?: boolean };
   };
-  if (!vesselData.meta?.success || !vesselData.data?.mmsi) {
+
+  if (!vesselData?.meta?.success || !vesselData?.data?.mmsi) {
     runtime.log("Vessel not found in Datalastic response");
     return { success: false, mmsi: input.mmsi, error: "vessel_not_found" };
   }
 
   runtime.log(`Vessel verified: ${vesselData.data.mmsi}`);
 
-  // 3. ABI-encode registerVessel call
+  // 4. ABI-encode registerVessel call
   const mmsiBytes32 = pad(toHex(input.mmsi), { size: 32 });
   const nullifierBytes32 = input.owner_nullifier.startsWith("0x")
     ? (input.owner_nullifier as Hex)
@@ -116,11 +127,11 @@ const onRegisterVessel = (
     args: [mmsiBytes32, nullifierBytes32, ownerWallet],
   });
 
-  // 4. Create signed report
+  // 5. Create signed report
   const reportRequest = prepareReportRequest(calldata as Hex);
   const report = runtime.report(reportRequest).result();
 
-  // 5. Write report to World Chain → YachtRegistry
+  // 6. Write report to World Chain → YachtRegistry
   const evmClient = new EVMClient(WORLD_CHAIN_SELECTOR);
   const writeRequest: WriteCreReportRequestJson = {
     receiver: YACHT_REGISTRY_ADDRESS,
