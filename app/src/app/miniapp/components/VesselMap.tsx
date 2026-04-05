@@ -279,9 +279,10 @@ function VesselHud({
 
 interface VesselMapProps {
   onSelectVessel: (vessel: EnrichedVessel) => void;
+  onUserLocation?: (pos: { lat: number; lon: number }) => void;
 }
 
-export default function VesselMap({ onSelectVessel }: VesselMapProps) {
+export default function VesselMap({ onSelectVessel, onUserLocation }: VesselMapProps) {
   const [userPos, setUserPos] = useState<{ lat: number; lon: number } | null>(
     null
   );
@@ -326,6 +327,7 @@ export default function VesselMap({ onSelectVessel }: VesselMapProps) {
       async (pos) => {
         const loc = { lat: pos.coords.latitude, lon: pos.coords.longitude };
         setUserPos(loc);
+        onUserLocation?.(loc);
         fetchCenter.current = loc;
         await fetchVessels(loc.lat, loc.lon);
         setLoading(false);

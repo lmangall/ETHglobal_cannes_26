@@ -28,3 +28,6 @@ cre-workflows/**/.cre_build_tmp.*
 
 # LLM reference docs (large files)
 llms-txt/
+
+# Dev notes (pitch, internal docs)
+dev/

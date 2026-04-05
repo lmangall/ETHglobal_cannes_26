@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import type { EnrichedVessel } from "@/lib/ais-feed";
 import { useChatWithUser } from "@/lib/use-chat";
+import { WorldIDButton } from "./WorldIDButton";
 
 /* ── Helpers ───────────────────────────────────────────────── */
 
@@ -42,9 +43,10 @@ function courseLabel(deg: number): string {
 interface VesselSheetProps {
   vessel: EnrichedVessel | null;
   onClose: () => void;
+  userLocation?: { lat: number; lon: number } | null;
 }
 
-export default function VesselSheet({ vessel, onClose }: VesselSheetProps) {
+export default function VesselSheet({ vessel, onClose, userLocation }: VesselSheetProps) {
   const sheetRef = useRef<HTMLDivElement>(null);
   const startY = useRef(0);
   const currentY = useRef(0);
@@ -207,31 +209,7 @@ export default function VesselSheet({ vessel, onClose }: VesselSheetProps) {
                 </div>
               </div>
             ) : (
-              <div className="mb-5 flex items-center gap-2.5 rounded-xl border border-[#334155]/40 bg-[#1E293B]/30 px-4 py-3">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#334155]/30">
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="#64748B"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                  >
-                    <circle cx="12" cy="12" r="10" />
-                    <line x1="15" y1="9" x2="9" y2="15" />
-                    <line x1="9" y1="9" x2="15" y2="15" />
-                  </svg>
-                </div>
-                <div>
-                  <p className="font-[system-ui] text-sm font-medium text-[#64748B]">
-                    Not Registered
-                  </p>
-                  <p className="font-[system-ui] text-[11px] text-[#64748B]">
-                    AIS data only — not verified on-chain
-                  </p>
-                </div>
-              </div>
+              <RegistrationPanel vessel={vessel} userLocation={userLocation} />
             )}
 
             {/* Stats grid */}
@@ -339,6 +317,153 @@ export default function VesselSheet({ vessel, onClose }: VesselSheetProps) {
         )}
       </div>
     </>
+  );
+}
+
+/* ── Registration Panel ───────────────────────────────────── */
+
+const MAX_REGISTRATION_DISTANCE_NM = 0.5;
+const MIN_VESSEL_SPEED_KN = 0.5;
+
+function RegistrationPanel({
+  vessel,
+  userLocation,
+}: {
+  vessel: EnrichedVessel;
+  userLocation?: { lat: number; lon: number } | null;
+}) {
+  const [verified, setVerified] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const isOnboard = vessel.distance <= MAX_REGISTRATION_DISTANCE_NM;
+  const isUnderway = vessel.speed >= MIN_VESSEL_SPEED_KN;
+  const allReady = verified && isOnboard && isUnderway;
+
+  async function handleRegister() {
+    if (!userLocation) return;
+    setLoading(true);
+    setError(null);
+    setResult(null);
+    try {
+      const res = await fetch("/api/register-vessel", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          mmsi: vessel.mmsi,
+          owner_wallet: process.env.NEXT_PUBLIC_DEMO_WALLET ?? "0x0000000000000000000000000000000000000000",
+          user_lat: userLocation.lat,
+          user_lon: userLocation.lon,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      setResult("Registration submitted! Vessel will appear as verified shortly.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Registration failed");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div className="mb-5 rounded-xl border border-[#1E3A5F]/40 bg-[#0C2340]/60 px-4 py-4 space-y-3">
+      <p className="font-[system-ui] text-sm font-semibold text-white/90">
+        Register This Vessel
+      </p>
+      <p className="font-[system-ui] text-[11px] text-[#64748B] leading-relaxed">
+        To register a vessel on-chain, all conditions must be met:
+      </p>
+
+      {/* Checklist */}
+      <div className="space-y-2">
+        <ChecklistItem
+          label="Verified your humanity"
+          met={verified}
+          detail={verified ? "World ID verified" : "Scan required"}
+        />
+        <ChecklistItem
+          label="Currently onboard"
+          met={isOnboard}
+          detail={isOnboard ? `${vessel.distance.toFixed(2)} NM away` : `${vessel.distance.toFixed(1)} NM away — must be < ${MAX_REGISTRATION_DISTANCE_NM} NM`}
+        />
+        <ChecklistItem
+          label="Vessel is underway"
+          met={isUnderway}
+          detail={isUnderway ? `${vessel.speed.toFixed(1)} kn` : `${vessel.speed.toFixed(1)} kn — must be moving`}
+        />
+      </div>
+
+      {/* World ID button if not verified */}
+      {!verified && (
+        <div className="pt-1">
+          <WorldIDButton action="vessel-registration" onVerified={() => setVerified(true)} />
+        </div>
+      )}
+
+      {/* Register button */}
+      {verified && (
+        <button
+          onClick={handleRegister}
+          disabled={!allReady || loading || !userLocation}
+          className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#D4A853]/30 bg-[#D4A853]/10 px-4 py-3 font-[system-ui] text-sm font-semibold text-[#D4A853] transition-colors active:bg-[#D4A853]/20 disabled:opacity-40 disabled:active:bg-[#D4A853]/10"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+          </svg>
+          {loading ? "Registering..." : "Register Vessel"}
+        </button>
+      )}
+
+      {result && (
+        <p className="font-[system-ui] text-[12px] text-[#16A34A] leading-relaxed">{result}</p>
+      )}
+      {error && (
+        <p className="font-[system-ui] text-[12px] text-[#EF4444] leading-relaxed">{error}</p>
+      )}
+    </div>
+  );
+}
+
+function ChecklistItem({
+  label,
+  met,
+  detail,
+}: {
+  label: string;
+  met: boolean;
+  detail: string;
+}) {
+  return (
+    <div className="flex items-center gap-2.5">
+      <div
+        className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${
+          met
+            ? "bg-[#16A34A]/20 text-[#16A34A]"
+            : "bg-[#334155]/30 text-[#64748B]"
+        }`}
+      >
+        {met ? (
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M20 6L9 17l-5-5" />
+          </svg>
+        ) : (
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        )}
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className={`font-[system-ui] text-[12px] font-medium ${met ? "text-white/80" : "text-[#64748B]"}`}>
+          {label}
+        </p>
+        <p className="font-[system-ui] text-[10px] text-[#475569] truncate">
+          {detail}
+        </p>
+      </div>
+    </div>
   );
 }
 

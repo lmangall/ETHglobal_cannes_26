@@ -18,15 +18,17 @@ export default function MiniAppHome() {
   const [selectedVessel, setSelectedVessel] = useState<EnrichedVessel | null>(
     null
   );
+  const [userLocation, setUserLocation] = useState<{ lat: number; lon: number } | null>(null);
 
   return (
     <main className="fixed inset-0 overflow-hidden bg-[#0B1426]">
       {/* ── Map Tab ─── */}
       <div className={activeTab === "map" ? "h-full" : "hidden"}>
-        <VesselMap onSelectVessel={setSelectedVessel} />
+        <VesselMap onSelectVessel={setSelectedVessel} onUserLocation={setUserLocation} />
         <VesselSheet
           vessel={selectedVessel}
           onClose={() => setSelectedVessel(null)}
+          userLocation={userLocation}
         />
       </div>
 
