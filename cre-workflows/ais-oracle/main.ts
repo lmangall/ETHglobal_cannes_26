@@ -1,13 +1,4 @@
-/**
- * CRE Workflow: AIS Oracle for Vessel Registration
- *
- * HTTP trigger → fetch API key via runtime.getSecret → HTTP GET (Datalastic API)
- * → consensus → EVM write to YachtRegistry on World Chain Mainnet.
- *
- * Uses runtime.getSecret() for the API key so simulation works end-to-end.
- * For production with enclave-level secrecy, switch to ConfidentialHTTPClient
- * with vaultDonSecrets + {{.key}} templates.
- */
+
 
 import {
   cre,
