@@ -1,8 +1,22 @@
 # Yachtbook
 
+![Yachtbook Banner](docs/images/banner.png)
+
 **Verified Crew Reputation for the Yachting Industry**
 
 World proves the human. Chainlink proves the boat. Together they create trust you can't fake.
+
+## Live App
+
+Try it on World App: [Launch Yachtbook](https://world.org/mini-app?app_id=app_2440ba47008f55323c2115880a8ee6df&path=&draft_id=meta_454590185b45b4a5099634eadeb78716)
+
+<p align="center">
+  <img src="docs/images/qr-code.png" alt="QR Code - Open in World App" width="200">
+</p>
+
+## Screenshots
+
+![App Screenshots](docs/images/screenshots.png)
 
 ## What it does
 
