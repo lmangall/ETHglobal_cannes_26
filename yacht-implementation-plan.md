@@ -515,12 +515,28 @@ FUNCTION getVessel(mmsi) → Vessel: public view
 FUNCTION isOwner(nullifier, mmsi) → bool: public view
 ```
 
+**Proximity Gate (anti-fraud):**
+
+Registration requires the user to be physically onboard the vessel (within 0.5 NM / ~926 m) **and** the vessel must be underway (not docked).
+The `/api/register-vessel` endpoint:
+1. Receives `user_lat` and `user_lon` from the client (browser GPS)
+2. Fetches the vessel's live AIS data from Datalastic by MMSI (position, speed, nav status)
+3. Rejects with 403 if vessel is docked (speed < 0.5 kn or nav status is moored/at anchor/aground)
+4. Computes Haversine distance between user and vessel
+5. Rejects with 403 if distance > 0.5 NM
+
+Two-layer anti-fraud: you can only claim a vessel if you're onboard **and** at sea.
+**Note:** Both thresholds are relaxed for demo/hackathon (0.5 NM proximity, 0.5 kn speed). In production: ~20–90 m proximity, ~2–3 kn minimum speed.
+
 **Next.js trigger endpoint pseudocode:**
 
 ```
 // route: /api/register-vessel
-INPUT: { mmsi, idkit_proof }
-  verify idkit_proof → get owner_nullifier
+INPUT: { mmsi, owner_wallet, user_lat, user_lon }
+  verify World ID cookie → get owner_nullifier
+  fetch vessel AIS position from Datalastic by MMSI
+  compute Haversine distance(user_lat/lon, vessel_lat/lon)
+  REJECT if distance > 0.5 NM (403: "must be onboard to register")
   trigger CRE workflow via HTTP trigger URL:
     POST {cre_workflow_http_trigger_url}
     body: { mmsi, owner_nullifier, owner_wallet: signal_from_proof }

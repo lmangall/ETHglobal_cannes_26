@@ -35,6 +35,7 @@ A maritime crew reputation and vessel verification platform built as a World App
 - CRE deployment requires Early Access approval (`cre account access`), but `--broadcast` mode works without it
 - YachtRegistry current deployment: `0xdEd817861eD9d2E5a8d0301C537E122a797C3EC9` (forwarder: deployer wallet `0xDC7D67...`)
 - CrewAttestation current deployment: `0x9437434A19b47c6e4B73a4c78a9921AD9cbCCAEe` (registry: YachtRegistry)
+- **Vessel registration requires GPS proximity + underway status** — user must be within 0.5 NM of the vessel AND the vessel must be underway (not docked/moored). Demo thresholds: 0.5 NM proximity, 0.5 kn min speed. Production: ~20–90 m proximity, ~2–3 kn min speed. Enforced in `/api/register-vessel` via Haversine distance + AIS speed/nav-status checks against Datalastic data.
 
 ## Demo Data Seeding
 Before any demo or pitch, seed on-chain attestations so the Profile view has real data to display.

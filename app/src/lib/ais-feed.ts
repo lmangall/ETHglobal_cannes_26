@@ -108,7 +108,7 @@ export async function getNearbyVessels(
   let res: Response | null = null;
   for (const apiKey of apiKeys) {
     const url = `${DATALASTIC_BASE}/api/v0/vessel_inradius?api-key=${apiKey}&lat=${lat}&lon=${lon}&radius=${clampedRadius}`;
-    res = await fetch(url, { next: { revalidate: 60 } });
+    res = await fetch(url, { next: { revalidate: 300 } });
     if (res.ok) break;
     // If rate-limited (402) or 429, try next key
     if (res.status !== 402 && res.status !== 429) break;
